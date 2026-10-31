@@ -1,0 +1,88 @@
+# Generated with runic (docs/DECISIONS.md). Adapted from odin-gtk (MIT, docs/LICENSE-odin-gtk.md).
+# build/sys holds links to the system headers (scripts/generate.sh).
+version: 0
+platforms:
+  - Linux x86_64
+from:
+  language: c
+  shared.linux: 'libX11.so'
+  headers:
+    - ../build/sys/usr/include/X11/Xlib.h
+    - ../build/sys/usr/include/X11/Xutil.h
+    - ../build/sys/usr/include/X11/XKBlib.h
+    - ../build/sys/usr/include/X11/Xatom.h
+  includedirs:
+    - ../stdinc/
+    - ../build/sys/usr/include/
+  load_all_includes: true
+  evaluate_macros: true
+  ignore:
+    # Xlib.h: "Structures and symbols starting with _ are private to the library."
+    constants:
+      - '_*'
+    functions:
+      - '_*'
+  extern:
+    - "../stdinc/*"
+    - "../stdinc/sys/*"
+to:
+  language: odin
+  package: xlib
+  out: xlib.odin
+  no_build_tag: true
+  detect:
+    # Every pointer parameter is ^T (^^T for T **) unless listed here. Xlib's prototypes name
+    # no parameters (the names are comments), so runic numbers them: param0 is the first.
+    # Each entry is a run of elements, read against the header: a pointer and a count, a
+    # fixed-size array or a NULL-terminated list.
+    parameters: declared
+    arrays:
+      XChangeProperty: [param6]
+      XSetWMProtocols: [param2]
+      XSetWMColormapWindows: [param2]
+      XInternAtoms: [param1, param4]
+      XGetAtomNames: [param1, param3]
+      XRestackWindows: [param1]
+      XQueryKeymap: [param1]
+      XChangeKeyboardMapping: [param3]
+      XSetPointerMapping: [param1]
+      XGetPointerMapping: [param1]
+      XStoreColors: [param2]
+      XQueryColors: [param2]
+      XFreeColors: [param2]
+      XDrawPoints: [param3]
+      XDrawLines: [param3]
+      XFillPolygon: [param3]
+      XDrawSegments: [param3]
+      XDrawRectangles: [param3]
+      XFillRectangles: [param3]
+      XDrawArcs: [param3]
+      XFillArcs: [param3]
+      XSetClipRectangles: [param4]
+      XDrawString16: [param5]
+      XDrawImageString16: [param5]
+      XDrawText: [param5]
+      XDrawText16: [param5]
+      XTextWidth16: [param1]
+      XTextExtents16: [param1]
+      XQueryTextExtents16: [param2]
+      XSetCommand: [param2]
+      XSetWMProperties: [param4]
+      XmbSetWMProperties: [param4]
+      Xutf8SetWMProperties: [param4]
+      XSetStandardProperties: [param5]
+      XStringListToTextProperty: [param0]
+      XmbTextListToTextProperty: [list]
+      Xutf8TextListToTextProperty: [list]
+      XSetIconSizes: [param2]
+      XAddHosts: [param1]
+      XRemoveHosts: [param1]
+      XSetFontPath: [param1]
+      XFreeFontPath: [param0]
+      XFreeFontNames: [param0]
+      XFreeStringList: [param0]
+  extern:
+    sources:
+      "../stdinc/stddef.h": "core:c"
+      "../stdinc/sys/types.h": "core:sys/linux"
+    trim_prefix: true
