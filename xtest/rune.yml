@@ -1,0 +1,46 @@
+# Generated with runic (docs/DECISIONS.md). Adapted from odin-gtk (MIT, docs/LICENSE-odin-gtk.md).
+# The XTEST extension, libXtst. Xlib's types are odin-x11's xlib (x11:xlib), so this package
+# declares no Xlib symbol; XInput.h's XDevice is declared here (docs/DECISIONS.md §4).
+# build/sys holds links to the system headers (scripts/generate.sh).
+version: 0
+platforms:
+  - Linux x86_64
+from:
+  language: c
+  shared.linux: 'libXtst.so'
+  headers:
+    - ../build/sys/usr/include/X11/extensions/XTest.h
+    - ../build/sys/usr/include/X11/extensions/xtestconst.h
+  includedirs:
+    - ../stdinc/
+    - ../build/sys/usr/include/
+  evaluate_macros: true
+  ignore:
+    constants:
+      - '_*'
+    functions:
+      - '_*'
+  extern:
+    - "../stdinc/*"
+    - "../stdinc/sys/*"
+    - "../build/sys/usr/include/X11/*"
+to:
+  language: odin
+  package: xtest
+  out: xtest.odin
+  no_build_tag: true
+  detect:
+    # Every pointer parameter is ^T unless listed here; runic numbers the unnamed parameters,
+    # param0 first. Listed: the axes of the device events, a pointer and a count.
+    parameters: declared
+    arrays:
+      XTestFakeDeviceKeyEvent: [param4]
+      XTestFakeDeviceButtonEvent: [param4]
+      XTestFakeProximityEvent: [param3]
+      XTestFakeDeviceMotionEvent: [param4]
+  extern:
+    sources:
+      "../stdinc/stddef.h": "core:c"
+      "../stdinc/sys/types.h": "core:sys/linux"
+      "../build/sys/usr/include/X11/*": "xlib x11:xlib"
+    trim_prefix: false
